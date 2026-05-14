@@ -26,6 +26,14 @@ public class Location implements Serializable {
 
     public String getName() { return name;}
 
+    public Float getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
     public String toXML() {
         if (name == null) {
             return "null";
