@@ -22,6 +22,10 @@ public class Route<T extends Number> implements Comparable<Route>, Serializable 
     private final long distance; //Значение поля должно быть больше 1
 
     public Route(T id, String name, Coordinates coordinates, Location from, Location to, long distance) {
+        this(id, name, coordinates, from, to, distance, LocalDate.now());
+    }
+
+    public Route(T id, String name, Coordinates coordinates, Location from, Location to, long distance, LocalDate creationDate) {
         if (coordinates == null) {
             throw new IllegalArgumentException("координаты не могут быть null");
         }
@@ -34,7 +38,7 @@ public class Route<T extends Number> implements Comparable<Route>, Serializable 
         this.id = id;
         this.coordinates = coordinates;
         this.name = name;
-        this.creationDate = LocalDate.now();
+        this.creationDate = creationDate == null ? LocalDate.now() : creationDate;
         this.from = from;
         this.to = to;
         this.distance = distance;
@@ -98,6 +102,9 @@ public class Route<T extends Number> implements Comparable<Route>, Serializable 
     }
     public long getDistance() {
         return distance;
+    }
+    public LocalDate getCreationDate() {
+        return creationDate;
     }
     public void setId(T id) {
         this.id = id;
