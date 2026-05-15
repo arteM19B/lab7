@@ -1,8 +1,9 @@
 package main.CollectionManager;
 
-import Interfases.Command;
+import main.Commands.Command;
 import Network.CommandType;
 import Network.Request;
+import main.model.User;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class Invoker {
         return commandsMap;
     }
 
-    public String execute(Request request) {
+    public String execute(Request request, User user) {
         Command command = commandsMap.get(request.getCommandType());
 
         if (command == null) {
@@ -30,7 +31,7 @@ public class Invoker {
         }
 
         try {
-            return command.execute(request.getCommandArgument());
+            return command.execute(request.getCommandArgument(), user);
         } catch (Exception e) {
             return "Command execution error: " + e.getMessage();
         }
