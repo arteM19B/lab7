@@ -17,10 +17,11 @@ public class AuthService {
     public User register(String login, String rawPassword) throws SQLException {
         validateCredential(login, rawPassword);
 
+        String normalizedLogin = login.trim();
         String hash = PasswordHasher.sha384(rawPassword);
 
         try {
-            return userDAO.insert(login, hash);
+            return userDAO.insert(normalizedLogin, hash);
         } catch (SQLException e) {
             if ("23505".equals(e.getSQLState())) {
                 throw new IllegalArgumentException("User already exists");
@@ -34,9 +35,10 @@ public class AuthService {
             return Optional.empty();
         }
 
+        String normalizedLogin = login.trim();
         String hash = PasswordHasher.sha384(rawPassword);
 
-        Optional<User> user = userDAO.findByLogin(login);
+        Optional<User> user = userDAO.findByLogin(normalizedLogin);
 
         if (user.isEmpty()) {
             return Optional.empty();
