@@ -25,7 +25,7 @@ public class UserDAO {
 
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, login);
+            statement.setString(1, login.trim());
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (!resultSet.next()) {
@@ -45,7 +45,7 @@ public class UserDAO {
 
         try (Connection connection = connectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, login);
+            statement.setString(1, login.trim());
             statement.setString(2, passwordHash);
 
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -59,10 +59,11 @@ public class UserDAO {
 
     private User mapUser(ResultSet resultSet) throws SQLException {
         Timestamp createdAt = resultSet.getTimestamp("created_at");
+        String passwordHash = resultSet.getString("password_hash");
         return new User(
                 resultSet.getLong("id"),
                 resultSet.getString("login"),
-                resultSet.getString("password_hash"),
+                passwordHash == null ? null : passwordHash.trim(),
                 createdAt == null ? null : createdAt.toLocalDateTime()
         );
     }
