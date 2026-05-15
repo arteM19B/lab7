@@ -2,8 +2,8 @@ package main.Commands;
 
 import Collection.Route;
 import main.CollectionManager.CollectionManager;
-import Interfases.Command;
 import Network.CommandArgument;
+import main.model.User;
 
 import java.util.stream.Collectors;
 
@@ -15,7 +15,7 @@ public class ShowCommand implements Command {
     }
 
     @Override
-    public String execute(CommandArgument argument) {
+    public String execute(CommandArgument argument, User user) {
         if (collectionManager.getCollection().isEmpty()) {
             return "Collection is empty";
         }

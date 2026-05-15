@@ -1,8 +1,8 @@
 package main.Commands;
 
-import Interfases.Command;
 import Network.CommandArgument;
 import Network.CommandType;
+import main.model.User;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,7 +15,7 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public String execute(CommandArgument argument) {
+    public String execute(CommandArgument argument, User user) {
         return commands.entrySet().stream()
                 .map(entry -> entry.getKey().getUserName() + " -- " + entry.getValue())
                 .collect(Collectors.joining("\n"));

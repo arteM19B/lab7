@@ -1,9 +1,9 @@
 package main.Commands;
 
 import main.CollectionManager.CollectionManager;
-import Interfases.Command;
 import Network.CommandArgument;
 import Network.LongArgument;
+import main.model.User;
 
 public class RemoveIdCommand implements Command {
     private final CollectionManager<Long> collectionManager;
@@ -13,7 +13,7 @@ public class RemoveIdCommand implements Command {
     }
 
     @Override
-    public String execute(CommandArgument argument) {
+    public String execute(CommandArgument argument, User user) {
         if (!(argument instanceof LongArgument)) {
             return "Error: id argument is required";
         }

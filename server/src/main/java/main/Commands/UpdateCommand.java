@@ -2,9 +2,9 @@ package main.Commands;
 
 import Collection.Route;
 import main.CollectionManager.CollectionManager;
-import Interfases.Command;
 import Network.CommandArgument;
 import Network.UpdateArgument;
+import main.model.User;
 
 public class UpdateCommand implements Command {
     private final CollectionManager<Long> collectionManager;
@@ -14,7 +14,7 @@ public class UpdateCommand implements Command {
     }
 
     @Override
-    public String execute(CommandArgument argument) {
+    public String execute(CommandArgument argument, User user) {
         if (!(argument instanceof UpdateArgument)) {
             return "Error: update needs id and Route arguments";
         }

@@ -1,9 +1,9 @@
 package main.Commands;
 
 import main.CollectionManager.CollectionManager;
-import Interfases.Command;
 import Network.CommandArgument;
 import Network.IntegerArgument;
+import main.model.User;
 
 public class RemoveAtCommand implements Command {
     private final CollectionManager<Long> collectionManager;
@@ -13,7 +13,7 @@ public class RemoveAtCommand implements Command {
     }
 
     @Override
-    public String execute(CommandArgument argument) {
+    public String execute(CommandArgument argument, User user) {
         if (!(argument instanceof IntegerArgument)) {
             return "Error: index argument is required";
         }

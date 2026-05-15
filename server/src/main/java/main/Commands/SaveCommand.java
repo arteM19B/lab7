@@ -1,8 +1,8 @@
 package main.Commands;
 
 import main.CollectionManager.CollectionManager;
-import Interfases.Command;
 import Network.CommandArgument;
+import main.model.User;
 
 public class SaveCommand implements Command {
     private final CollectionManager<Long> collectionManager;
@@ -12,7 +12,7 @@ public class SaveCommand implements Command {
     }
 
     @Override
-    public String execute(CommandArgument argument) {
+    public String execute(CommandArgument argument, User user) {
         collectionManager.save();
         return "Collection saved on server";
     }

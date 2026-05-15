@@ -1,8 +1,8 @@
 package main.Commands;
 
 import main.CollectionManager.CollectionManager;
-import Interfases.Command;
 import Network.CommandArgument;
+import main.model.User;
 
 public class InfoCommand implements Command {
     private final CollectionManager<Long> collectionManager;
@@ -12,7 +12,7 @@ public class InfoCommand implements Command {
     }
 
     @Override
-    public String execute(CommandArgument argument) {
+    public String execute(CommandArgument argument, User user) {
         StringBuilder sb = new StringBuilder();
         sb.append("Collection type: ").append(collectionManager.getType()).append("\n");
         sb.append("Initialization time: ").append(collectionManager.getInitializationTime()).append("\n");
