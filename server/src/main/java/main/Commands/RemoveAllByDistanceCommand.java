@@ -4,12 +4,15 @@ import main.CollectionManager.CollectionManager;
 import Network.CommandArgument;
 import Network.LongArgument;
 import main.model.User;
+import main.service.CollectionService;
+
+import java.sql.SQLException;
 
 public class RemoveAllByDistanceCommand implements Command {
-    private final CollectionManager<Long> collectionManager;
+    private final CollectionService collectionService;
 
-    public RemoveAllByDistanceCommand(CollectionManager<Long> collectionManager) {
-        this.collectionManager = collectionManager;
+    public RemoveAllByDistanceCommand(CollectionService collectionService) {
+        this.collectionService = collectionService;
     }
 
     @Override
@@ -22,12 +25,15 @@ public class RemoveAllByDistanceCommand implements Command {
         if (distance <= 1) {
             return "Error: distance must be greater than 1";
         }
-
-        int count = collectionManager.removeAllByDistance(distance);
-        if (count == 0) {
-            return "No routes with distance " + distance + " found";
+        try {
+            int count = collectionService.removeAllByDistance(distance, user);
+            if (count == 0) {
+                return "No routes with distance " + distance + " found";
+            }
+            return "Removed " + count + " routes with distance " + distance;
+        } catch (SQLException e) {
+            return "Database error: " + e.getMessage();
         }
-        return "Removed " + count + " routes with distance " + distance;
     }
 
     @Override

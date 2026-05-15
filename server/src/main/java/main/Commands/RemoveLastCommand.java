@@ -3,25 +3,30 @@ package main.Commands;
 import main.CollectionManager.CollectionManager;
 import Network.CommandArgument;
 import main.model.User;
+import main.service.CollectionService;
+
+import java.sql.SQLException;
 
 public class RemoveLastCommand implements Command {
-    private final CollectionManager<Long> collectionManager;
+    private final CollectionService collectionService;
 
-    public RemoveLastCommand(CollectionManager<Long> collectionManager) {
-        this.collectionManager = collectionManager;
+    public RemoveLastCommand(CollectionService collectionService) {
+        this.collectionService = collectionService;
     }
 
     @Override
     public String execute(CommandArgument argument, User user) {
-        if (collectionManager.getCollection().isEmpty()) {
-            return "Collection is empty";
+        try {
+            boolean removed = collectionService.removeLast(user);
+
+            if (!removed) {
+                return "Collection is empty or last element does not belong to you";
+            }
+
+            return "Last element removed";
+        } catch (SQLException e) {
+            return "Database error: " + e.getMessage();
         }
-        collectionManager.remove_last();
-        return "Last element removed";
     }
 
-    @Override
-    public String toString() {
-        return "remove last collection element";
-    }
 }

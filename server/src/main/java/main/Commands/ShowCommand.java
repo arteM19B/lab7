@@ -4,25 +4,20 @@ import Collection.Route;
 import main.CollectionManager.CollectionManager;
 import Network.CommandArgument;
 import main.model.User;
+import main.service.CollectionService;
 
 import java.util.stream.Collectors;
 
 public class ShowCommand implements Command {
-    private final CollectionManager<Long> collectionManager;
+    private final CollectionService collectionService;
 
-    public ShowCommand(CollectionManager<Long> collectionManager) {
-        this.collectionManager = collectionManager;
+    public ShowCommand(CollectionService collectionService) {
+        this.collectionService = collectionService;
     }
 
     @Override
     public String execute(CommandArgument argument, User user) {
-        if (collectionManager.getCollection().isEmpty()) {
-            return "Collection is empty";
-        }
-
-        return collectionManager.getCollectionSortedByLocation().stream()
-                .map(Route::toString)
-                .collect(Collectors.joining("\n"));
+        return collectionService.show();
     }
 
     @Override

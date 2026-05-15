@@ -4,12 +4,15 @@ import main.CollectionManager.CollectionManager;
 import Network.CommandArgument;
 import Network.LongArgument;
 import main.model.User;
+import main.service.CollectionService;
+
+import java.sql.SQLException;
 
 public class RemoveIdCommand implements Command {
-    private final CollectionManager<Long> collectionManager;
+    private final CollectionService collectionService;
 
-    public RemoveIdCommand(CollectionManager<Long> collectionManager) {
-        this.collectionManager = collectionManager;
+    public RemoveIdCommand(CollectionService collectionService) {
+        this.collectionService = collectionService;
     }
 
     @Override
@@ -19,8 +22,12 @@ public class RemoveIdCommand implements Command {
         }
 
         Long id = ((LongArgument) argument).getValue();
-        boolean found = collectionManager.getCollection().removeIf(route -> id.equals(route.getId()));
-        return found ? "Element with ID " + id + " removed" : "Element with ID " + id + " not found";
+        try {
+            boolean found = collectionService.removeById(id, user);
+            return found ? "Element with ID " + id + " removed" : "Element with ID " + id + " not found";
+        } catch (SQLException e) {
+            return "Database error: " + e.getMessage();
+        }
     }
 
     @Override

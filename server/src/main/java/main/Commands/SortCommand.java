@@ -1,24 +1,30 @@
 package main.Commands;
 
-import main.CollectionManager.CollectionManager;
+import Collection.Route;
 import Network.CommandArgument;
 import main.model.User;
+import main.service.CollectionService;
+
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 public class SortCommand implements Command {
-    private final CollectionManager<Long> collectionManager;
+    private final CollectionService collectionService;
 
-    public SortCommand(CollectionManager<Long> collectionManager) {
-        this.collectionManager = collectionManager;
+    public SortCommand(CollectionService collectionService) {
+        this.collectionService = collectionService;
     }
 
     @Override
     public String execute(CommandArgument argument, User user) {
-        collectionManager.sort();
-        return "Collection sorted";
+        return collectionService.snapshot().stream()
+                .sorted()
+                .map(Route::toString)
+                .collect(Collectors.joining("\n"));
     }
 
     @Override
     public String toString() {
-        return "sort collection by natural order";
+        return "show collection elements sorted by natural order";
     }
 }

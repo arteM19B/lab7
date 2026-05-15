@@ -5,12 +5,15 @@ import main.CollectionManager.CollectionManager;
 import Network.CommandArgument;
 import Network.UpdateArgument;
 import main.model.User;
+import main.service.CollectionService;
+
+import java.sql.SQLException;
 
 public class UpdateCommand implements Command {
-    private final CollectionManager<Long> collectionManager;
+    private final CollectionService collectionService;
 
-    public UpdateCommand(CollectionManager<Long> collectionManager) {
-        this.collectionManager = collectionManager;
+    public UpdateCommand(CollectionService collectionService) {
+        this.collectionService = collectionService;
     }
 
     @Override
@@ -27,14 +30,23 @@ public class UpdateCommand implements Command {
             return "Error: id or route was not received";
         }
 
-        Route<Long> existing = collectionManager.getById(id);
+        Route<Long> existing = collectionService.getById(id);
+
         if (existing == null) {
             return "Route with ID " + id + " not found";
         }
 
         newRoute.setId(id);
-        collectionManager.update(id, newRoute);
-        return "Route with ID " + id + " updated";
+
+        try {
+            if (collectionService.update(id, newRoute, user)) {
+                return "Route with ID " + id + " updated";
+            } else {
+                return "Error: you are trying to update a route that doesn't exist";
+            }
+        } catch (SQLException e) {
+            return "Database error: " + e.getMessage();
+        }
     }
 
     @Override

@@ -1,15 +1,15 @@
 package main.Commands;
 
-import main.CollectionManager.CollectionManager;
 import Network.CommandArgument;
 import Network.LongArgument;
 import main.model.User;
+import main.service.CollectionService;
 
 public class FilterLessThanDistanceCommand implements Command {
-    private final CollectionManager<Long> collectionManager;
+    private final CollectionService collectionService;
 
-    public FilterLessThanDistanceCommand(CollectionManager<Long> collectionManager) {
-        this.collectionManager = collectionManager;
+    public FilterLessThanDistanceCommand(CollectionService collectionService) {
+        this.collectionService = collectionService;
     }
 
     @Override
@@ -19,10 +19,12 @@ public class FilterLessThanDistanceCommand implements Command {
         }
 
         long distance = ((LongArgument) argument).getValue();
+
         if (distance <= 1) {
             return "Error: distance must be greater than 1";
         }
-        return collectionManager.filterLessThanDistance(distance);
+
+        return collectionService.filterLessThanDistance(distance);
     }
 
     @Override

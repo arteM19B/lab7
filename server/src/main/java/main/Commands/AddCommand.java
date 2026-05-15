@@ -5,12 +5,15 @@ import main.CollectionManager.CollectionManager;
 import Network.CommandArgument;
 import Network.RouteArgument;
 import main.model.User;
+import main.service.CollectionService;
+
+import java.sql.SQLException;
 
 public class AddCommand implements Command {
-    private final CollectionManager<Long> collectionManager;
+    private final CollectionService collectionService;
 
-    public AddCommand(CollectionManager<Long> collectionManager) {
-        this.collectionManager = collectionManager;
+    public AddCommand(CollectionService collectionService) {
+        this.collectionService = collectionService;
     }
 
     @Override
@@ -20,9 +23,13 @@ public class AddCommand implements Command {
         }
 
         Route<Long> route = ((RouteArgument) argument).getRoute();
-        route.setId(collectionManager.generateNextId());
-        collectionManager.add(route);
-        return "Route added";
+
+        try {
+            Route<Long> inserted = collectionService.add(route, user);
+            return "Route added with ID " + inserted.getId();
+        } catch (SQLException e) {
+            return "Database error: " + e.getMessage();
+        }
     }
 
     @Override

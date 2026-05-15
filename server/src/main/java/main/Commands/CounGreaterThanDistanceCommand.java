@@ -4,12 +4,13 @@ import main.CollectionManager.CollectionManager;
 import Network.CommandArgument;
 import Network.LongArgument;
 import main.model.User;
+import main.service.CollectionService;
 
 public class CounGreaterThanDistanceCommand implements Command {
-    private final CollectionManager<Long> collectionManager;
+    private final CollectionService collectionService;
 
-    public CounGreaterThanDistanceCommand(CollectionManager<Long> collectionManager) {
-        this.collectionManager = collectionManager;
+    public CounGreaterThanDistanceCommand(CollectionService collectionService) {
+        this.collectionService = collectionService;
     }
 
     @Override
@@ -23,7 +24,7 @@ public class CounGreaterThanDistanceCommand implements Command {
             return "Error: distance must be greater than 1";
         }
 
-        int count = collectionManager.countGreaterThanDistance(distance);
+        int count = collectionService.countGreaterThanDistance(distance);
         if (count == 0) {
             return "No routes with distance greater than " + distance + " found";
         }

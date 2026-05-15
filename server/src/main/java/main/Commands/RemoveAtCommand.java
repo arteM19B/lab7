@@ -4,12 +4,15 @@ import main.CollectionManager.CollectionManager;
 import Network.CommandArgument;
 import Network.IntegerArgument;
 import main.model.User;
+import main.service.CollectionService;
+
+import java.sql.SQLException;
 
 public class RemoveAtCommand implements Command {
-    private final CollectionManager<Long> collectionManager;
+    private final CollectionService collectionService;
 
-    public RemoveAtCommand(CollectionManager<Long> collectionManager) {
-        this.collectionManager = collectionManager;
+    public RemoveAtCommand(CollectionService collectionService) {
+        this.collectionService = collectionService;
     }
 
     @Override
@@ -19,12 +22,18 @@ public class RemoveAtCommand implements Command {
         }
 
         int index = ((IntegerArgument) argument).getValue();
-        if (index < 0 || index >= collectionManager.size()) {
+        if (index < 0 || index >= collectionService.size()) {
             return "Error: element with this index does not exist";
         }
-
-        collectionManager.removeAt(index);
-        return "Element at index " + index + " removed";
+        try {
+            if (collectionService.removeAt(index, user)) {
+                return "Element at index " + index + " removed";
+            } else {
+                return "Error: element with this index does not exist";
+            }
+        } catch (SQLException e) {
+            return "Database error: " + e.getMessage();
+        }
     }
 
     @Override
