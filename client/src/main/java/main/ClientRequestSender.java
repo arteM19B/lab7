@@ -33,13 +33,13 @@ public class ClientRequestSender {
         this.port = port;
     }
 
-    public String send(CommandType commandType, CommandArgument argument) throws IOException, ClassNotFoundException {
+    public String send(CommandType commandType, CommandArgument argument, String login, String password) throws IOException, ClassNotFoundException {
         String requestId = UUID.randomUUID().toString();
         MDC.put("requestId", requestId);
 
         try {
             logger.info("Preparing command: {}", commandType);
-            Request request = new Request(requestId, commandType, argument);
+            Request request = new Request(requestId, commandType, argument, login, password);
             byte[] data = serialize(request);
 
             DatagramPacket packet = new DatagramPacket(data, data.length, address, port);

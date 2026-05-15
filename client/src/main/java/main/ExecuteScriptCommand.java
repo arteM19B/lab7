@@ -17,7 +17,7 @@ public class ExecuteScriptCommand {
         this.commandExecutor = commandExecutor;
     }
 
-    public void execute(String fileName) {
+    public void execute(String fileName, String login, String password) {
         if (fileName == null || fileName.trim().isEmpty()) {
             System.out.println("Error: script file name is required");
             return;
@@ -43,7 +43,7 @@ public class ExecuteScriptCommand {
                     continue;
                 }
 
-                commandExecutor.executeScriptLine(line, scriptScanner, fileName, lineNumber);
+                commandExecutor.executeScriptLine(line, scriptScanner, fileName, lineNumber, login, password);
             }
 
             System.out.println("Script completed: " + fileName);

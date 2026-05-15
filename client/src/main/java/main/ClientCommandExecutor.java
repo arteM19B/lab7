@@ -32,14 +32,14 @@ public class ClientCommandExecutor {
         this.executeScriptCommand = executeScriptCommand;
     }
 
-    public void executeInteractiveLine(String line, RouteBuilder routeBuilder) {
+    public void executeInteractiveLine(String line, RouteBuilder routeBuilder, String login, String password) {
         ParsedCommand parsedCommand = parse(line);
         if (parsedCommand == null) {
             return;
         }
 
         if (parsedCommand.name.equals("execute_script")) {
-            executeScriptCommand.execute(parsedCommand.argument);
+            executeScriptCommand.execute(parsedCommand.argument, login, password);
             return;
         }
 
@@ -60,7 +60,7 @@ public class ClientCommandExecutor {
         }
 
         try {
-            String response = sender.send(commandType.get(), argument);
+            String response = sender.send(commandType.get(), argument, login, password);
             System.out.println(response);
             printClientHelp(commandType.get());
         } catch (SocketTimeoutException e) {
@@ -72,16 +72,18 @@ public class ClientCommandExecutor {
         }
     }
 
-    public void executeScriptLine(String line, Scanner scriptScanner, String scriptName, int lineNumber) {
+    public void executeScriptLine(String line, Scanner scriptScanner, String scriptName, int lineNumber, String login, String password) {
         ParsedCommand parsedCommand = parse(line);
         if (parsedCommand == null) {
             return;
         }
 
         if (parsedCommand.name.equals("execute_script")) {
-            executeScriptCommand.execute(parsedCommand.argument);
+            executeScriptCommand.execute(parsedCommand.argument, login, password);
             return;
         }
+
+
 
         if (parsedCommand.name.equals("save") || parsedCommand.name.equals("exit")) {
             throw new ScriptExecutionException("command is available only outside scripts", scriptName, lineNumber, parsedCommand.name);
@@ -95,7 +97,7 @@ public class ClientCommandExecutor {
 
         try {
             CommandArgument argument = buildScriptArgument(commandType.get(), parsedCommand.argument, scriptScanner);
-            String response = sender.send(commandType.get(), argument);
+            String response = sender.send(commandType.get(), argument, login, password);
             System.out.println(response);
         } catch (ScriptExecutionException e) {
             throw e;
