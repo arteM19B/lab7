@@ -17,7 +17,8 @@ public enum CommandType implements Serializable {
     SORT("sort"),
     REMOVE_ALL_BY_DISTANCE("remove_all_by_distance"),
     COUNT_GREATER_THAN_DISTANCE("count_greater_than_distance"),
-    FILTER_LESS_THAN_DISTANCE("filter_less_than_distance");
+    FILTER_LESS_THAN_DISTANCE("filter_less_than_distance"),
+    REGISTER("register");
 
     private final String userName;
 
