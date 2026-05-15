@@ -3,6 +3,7 @@ package main.db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class ConnectionManager {
     private final String url;
@@ -16,7 +17,12 @@ public class ConnectionManager {
     }
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, dbUser, dbPassword);
+        Properties properties = new Properties();
+        properties.setProperty("user", dbUser);
+        properties.setProperty("password", dbPassword);
+        properties.setProperty("connectTimeout", "5");
+        properties.setProperty("socketTimeout", "20");
+        return DriverManager.getConnection(url, properties);
     }
 
 }
