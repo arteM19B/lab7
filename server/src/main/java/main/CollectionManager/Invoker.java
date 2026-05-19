@@ -5,11 +5,11 @@ import Network.CommandType;
 import Network.Request;
 import main.model.User;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Invoker {
-    private final Map<CommandType, Command> commandsMap = new HashMap<>();
+    private final Map<CommandType, Command> commandsMap = new ConcurrentHashMap<>();
 
     public void registerCommand(CommandType type, Command command) {
         commandsMap.put(type, command);
