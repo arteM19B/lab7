@@ -54,7 +54,6 @@ public class Route<T extends Number> implements Comparable<Route>, Serializable 
         if (name == null) {
             throw new IllegalArgumentException("имя маршрута не может быть null");
         }
-//        this.id = (T) main.java.main.CollectionManager.getInstance().generateNextId();
         this.coordinates = coordinates;
         this.name = name;
         this.creationDate = LocalDate.now();
