@@ -11,7 +11,9 @@ import java.nio.channels.DatagramChannel;
 public class ResponseSender {
     public void send(DatagramChannel channel, ReceivedPacket requestPacket, Response response) throws IOException {
         byte[] responseBytes = serializeResponse(response);
-        channel.send(ByteBuffer.wrap(responseBytes), requestPacket.getClientAddress());
+        synchronized (channel) {
+            channel.send(ByteBuffer.wrap(responseBytes), requestPacket.getClientAddress());
+        }
     }
 
     private byte[] serializeResponse(Response response) throws IOException {
