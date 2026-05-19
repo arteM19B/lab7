@@ -1,22 +1,23 @@
 package main;
 
-import main.CollectionManager.CollectionManager;
 import main.CollectionManager.Invoker;
 import main.Commands.*;
 import Network.CommandType;
-import Network.Request;
-import Network.Response;
 import main.ServerNetwork.ReceivedPacket;
 import main.ServerNetwork.RequestReader;
+import main.ServerNetwork.RequestDispatcher;
 import main.ServerNetwork.ResponseSender;
 import main.ServerNetwork.UdpRequestReceiver;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import main.db.CollectionDAO;
 import main.db.ConnectionManager;
@@ -26,14 +27,10 @@ import main.service.CollectionService;
 import main.service.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 public class ServerMain {
     private static final int PORT = 1234;
     private static final Logger logger = LoggerFactory.getLogger(ServerMain.class);
-    private static final String dbLogin = "s501442";
-    private static final String dbPassword = "...";
-    private static final String dbUrl = "jdbc:postgresql://localhost:15432/studs";
 
     public static void main(String[] args) {
         logger.info("Server started");
@@ -42,8 +39,20 @@ public class ServerMain {
         RequestReader requestReader = new RequestReader();
         ResponseSender responseSender = new ResponseSender();
 
+        DatabaseConfig databaseConfig;
+        try {
+            databaseConfig = loadDatabaseConfig();
+        } catch (Exception e) {
+            System.err.println("Database config error: " + e.getMessage());
+            logger.error("Database config error", e);
+            return;
+        }
 
-        ConnectionManager connectionManager = new ConnectionManager(dbUrl, dbLogin, dbPassword);
+        ConnectionManager connectionManager = new ConnectionManager(
+                databaseConfig.url(),
+                databaseConfig.user(),
+                databaseConfig.password()
+        );
         UserDAO userDAO = new UserDAO(connectionManager);
         AuthService authService = new AuthService(userDAO);
         Invoker invoker = new Invoker();
@@ -51,6 +60,7 @@ public class ServerMain {
         CollectionService collectionService = new CollectionService(collectionDAO);
         registerCommands(invoker, collectionService);
         RequestHandler requestHandler = new RequestHandler(authService, invoker);
+        RequestDispatcher requestDispatcher = new RequestDispatcher(requestReader, requestHandler, responseSender);
 
         try {
             logger.info("Loading collection from database");
@@ -62,31 +72,18 @@ public class ServerMain {
 
 
         try (DatagramChannel channel = DatagramChannel.open();
-             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in))) {
+             requestDispatcher) {
             channel.configureBlocking(false);
             channel.bind(new InetSocketAddress(PORT));
             logger.info("Server started on port: {}", PORT);
 
             ByteBuffer buffer = ByteBuffer.allocate(65536);
-            boolean running = true;
 
             while (true) {
                 ReceivedPacket receivedPacket = requestReceiver.receive(channel, buffer);
                 if (receivedPacket != null) {
-                    try {
-                        logger.info("Packet received from: {}", receivedPacket.getClientAddress());
-                        Request request = requestReader.read(receivedPacket.getData());
-                        MDC.put("requestId", request.getRequestId());
-                        logger.info("Request received: {}", request.getRequestId());
-                        Response response = requestHandler.handle(request);
-                        logger.info("Response prepared for request: {}", request.getRequestId());
-                        responseSender.send(channel, receivedPacket, response);
-                        logger.info("Response sent for request: {}", request.getRequestId());
-                    } catch (Exception e) {
-                        logger.error("Error while processing request", e);
-                    } finally {
-                        MDC.clear();
-                    }
+                    logger.info("Packet received from: {}", receivedPacket.getClientAddress());
+                    requestDispatcher.dispatch(channel, receivedPacket);
                 }
                 Thread.sleep(10);
             }
@@ -115,21 +112,43 @@ public class ServerMain {
         logger.info("Commands registered");
     }
 
-    private static boolean handleServerCommand(String line, CollectionManager<Long> collectionManager) {
-        String command = line == null ? "" : line.trim();
-        if (command.isEmpty()) {
-            return true;
+    private static DatabaseConfig loadDatabaseConfig() throws IOException {
+        Path configPath = findDatabaseConfigPath();
+        Properties properties = new Properties();
+
+        try (InputStream inputStream = Files.newInputStream(configPath)) {
+            properties.load(inputStream);
         }
 
-        if (command.equals("exit")) {
-            logger.info("Server console command received: exit");
-            return false;
+        return new DatabaseConfig(
+                requireProperty(properties, "db.url"),
+                requireProperty(properties, "db.user"),
+                requireProperty(properties, "db.password")
+        );
+    }
+
+    private static Path findDatabaseConfigPath() {
+        Path rootConfig = Path.of("server.properties");
+        if (Files.exists(rootConfig)) {
+            return rootConfig;
         }
 
-        System.out.println("Server command is not available: " + command);
-        System.out.println("Available server commands: save, exit");
-        logger.warn("Unknown server console command: {}", command);
+        Path serverConfig = Path.of("server", "server.properties");
+        if (Files.exists(serverConfig)) {
+            return serverConfig;
+        }
 
-        return true;
+        throw new IllegalStateException("server.properties was not found");
+    }
+
+    private static String requireProperty(Properties properties, String key) {
+        String value = properties.getProperty(key);
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException("Property " + key + " is not set");
+        }
+        return value.trim();
+    }
+
+    private record DatabaseConfig(String url, String user, String password) {
     }
 }
