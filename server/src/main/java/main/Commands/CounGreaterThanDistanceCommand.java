@@ -1,6 +1,5 @@
 package main.Commands;
 
-import main.CollectionManager.CollectionManager;
 import Network.CommandArgument;
 import Network.LongArgument;
 import main.model.User;

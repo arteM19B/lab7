@@ -1,7 +1,6 @@
 package main.Commands;
 
 import Collection.Route;
-import main.CollectionManager.CollectionManager;
 import Network.CommandArgument;
 import main.model.User;
 import main.service.CollectionService;
