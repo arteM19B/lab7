@@ -18,7 +18,7 @@ public class AuthService {
         validateCredential(login, rawPassword);
 
         String normalizedLogin = login.trim();
-        String hash = PasswordHasher.sha1(rawPassword);
+        String hash = PasswordHasher.sha384(rawPassword);
 
         try {
             return userDAO.insert(normalizedLogin, hash);
@@ -36,7 +36,7 @@ public class AuthService {
         }
 
         String normalizedLogin = login.trim();
-        String hash = PasswordHasher.sha1(rawPassword);
+        String hash = PasswordHasher.sha384(rawPassword);
 
         Optional<User> user = userDAO.findByLogin(normalizedLogin);
 

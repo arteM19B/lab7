@@ -8,13 +8,17 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.nio.channels.DatagramChannel;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class RequestDispatcher implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(RequestDispatcher.class);
 
     private final ForkJoinPool requestReadPool;
+    private final ExecutorService processingPool;
+    private final ExecutorService sendingPool;
     private final RequestReader requestReader;
     private final RequestHandler requestHandler;
     private final ResponseSender responseSender;
@@ -25,6 +29,8 @@ public class RequestDispatcher implements AutoCloseable {
             ResponseSender responseSender
     ) {
         this.requestReadPool = new ForkJoinPool();
+        this.processingPool = Executors.newFixedThreadPool(8);
+        this.sendingPool = Executors.newFixedThreadPool(8);
         this.requestReader = requestReader;
         this.requestHandler = requestHandler;
         this.responseSender = responseSender;
@@ -40,11 +46,8 @@ public class RequestDispatcher implements AutoCloseable {
             Request request = requestReader.read(receivedPacket.getData());
             logger.info("Request read: {}", request.getRequestId());
 
-            Thread processingThread = new Thread(
-                    () -> processRequest(channel, receivedPacket, request),
-                    "request-handler-" + shortRequestId(request)
-            );
-            processingThread.start();
+            processingPool.execute(() -> processRequest(channel, receivedPacket, request));
+
         } catch (Exception e) {
             logger.error("Error while reading request", e);
         }
@@ -57,11 +60,8 @@ public class RequestDispatcher implements AutoCloseable {
             Response response = requestHandler.handle(request);
             logger.info("Response prepared");
 
-            Thread responseThread = new Thread(
-                    () -> sendResponse(channel, receivedPacket, request, response),
-                    "response-sender-" + shortRequestId(request)
-            );
-            responseThread.start();
+            sendingPool.execute(() -> sendResponse(channel, receivedPacket, request, response));
+
         } catch (Exception e) {
             logger.error("Error while processing request", e);
         } finally {
@@ -98,10 +98,19 @@ public class RequestDispatcher implements AutoCloseable {
     @Override
     public void close() {
         requestReadPool.shutdown();
+        processingPool.shutdown();
+        sendingPool.shutdown();
         try {
             if (!requestReadPool.awaitTermination(5, TimeUnit.SECONDS)) {
                 requestReadPool.shutdownNow();
             }
+            if (!processingPool.awaitTermination(5, TimeUnit.SECONDS)) {
+                processingPool.shutdownNow();
+            }
+            if (!sendingPool.awaitTermination(5, TimeUnit.SECONDS)) {
+                sendingPool.shutdownNow();
+            }
+
         } catch (InterruptedException e) {
             requestReadPool.shutdownNow();
             Thread.currentThread().interrupt();
