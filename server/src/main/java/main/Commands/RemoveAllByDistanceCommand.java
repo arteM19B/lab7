@@ -2,6 +2,7 @@ package main.Commands;
 
 import Network.CommandArgument;
 import Network.LongArgument;
+import main.db.ConnectionManager;
 import main.model.User;
 import main.service.CollectionService;
 
@@ -31,7 +32,7 @@ public class RemoveAllByDistanceCommand implements Command {
             }
             return "Removed " + count + " routes with distance " + distance;
         } catch (SQLException e) {
-            return "Database error: " + e.getMessage();
+            return ConnectionManager.getDatabaseErrorMessage(e);
         }
     }
 

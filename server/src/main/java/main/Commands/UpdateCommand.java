@@ -3,6 +3,7 @@ package main.Commands;
 import Collection.Route;
 import Network.CommandArgument;
 import Network.UpdateArgument;
+import main.db.ConnectionManager;
 import main.model.User;
 import main.service.CollectionService;
 
@@ -44,7 +45,7 @@ public class UpdateCommand implements Command {
                 return "Error: you are trying to update a route that doesn't exist";
             }
         } catch (SQLException e) {
-            return "Database error: " + e.getMessage();
+            return ConnectionManager.getDatabaseErrorMessage(e);
         }
     }
 

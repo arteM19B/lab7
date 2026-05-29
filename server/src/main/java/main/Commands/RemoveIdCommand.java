@@ -2,6 +2,7 @@ package main.Commands;
 
 import Network.CommandArgument;
 import Network.LongArgument;
+import main.db.ConnectionManager;
 import main.model.User;
 import main.service.CollectionService;
 
@@ -25,7 +26,7 @@ public class RemoveIdCommand implements Command {
             boolean found = collectionService.removeById(id, user);
             return found ? "Element with ID " + id + " removed" : "Element with ID " + id + " not found";
         } catch (SQLException e) {
-            return "Database error: " + e.getMessage();
+            return ConnectionManager.getDatabaseErrorMessage(e);
         }
     }
 

@@ -1,6 +1,7 @@
 package main.Commands;
 
 import Network.CommandArgument;
+import main.db.ConnectionManager;
 import main.model.User;
 import main.service.CollectionService;
 
@@ -19,7 +20,7 @@ public class ClearCommand implements Command {
             collectionService.clearOwned(user);
             return "Collection cleared";
         } catch (SQLException e) {
-            return "Database error: " + e.getMessage();
+            return ConnectionManager.getDatabaseErrorMessage(e);
         }
     }
 

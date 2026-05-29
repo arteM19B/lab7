@@ -1,6 +1,7 @@
 package main.Commands;
 
 import Network.CommandArgument;
+import main.db.ConnectionManager;
 import main.model.User;
 import main.service.CollectionService;
 
@@ -24,7 +25,7 @@ public class RemoveLastCommand implements Command {
 
             return "Last element removed";
         } catch (SQLException e) {
-            return "Database error: " + e.getMessage();
+            return ConnectionManager.getDatabaseErrorMessage(e);
         }
     }
 

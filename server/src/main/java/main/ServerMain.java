@@ -11,6 +11,7 @@ import main.ServerNetwork.UdpRequestReceiver;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
@@ -44,7 +45,7 @@ public class ServerMain {
             databaseConfig = loadDatabaseConfig();
         } catch (Exception e) {
             System.err.println("Database config error: " + e.getMessage());
-            logger.error("Database config error", e);
+            logger.error("Database config error: {}", e.getMessage());
             return;
         }
 
@@ -67,7 +68,9 @@ public class ServerMain {
             collectionService.loadFromDatabase();
             logger.info("Collection loaded from database");
         } catch (SQLException e) {
-            logger.error("Error while loading collection from database", e);
+            String message = ConnectionManager.getDatabaseErrorMessage(e);
+            System.err.println(message);
+            logger.error("Error while loading collection from database: {}", ConnectionManager.getDatabaseLogMessage(e));
         }
 
 
@@ -88,8 +91,9 @@ public class ServerMain {
                 Thread.sleep(10);
             }
         } catch (Exception e) {
-            System.err.println("Server error: " + e.getMessage());
-            logger.error("Server error", e);
+            String message = toServerErrorMessage(e);
+            System.err.println("Server error: " + message);
+            logger.error("Server error: {}", message);
         } finally {
             logger.info("Server stopped");
         }
@@ -147,6 +151,17 @@ public class ServerMain {
             throw new IllegalStateException("Property " + key + " is not set");
         }
         return value.trim();
+    }
+
+    private static String toServerErrorMessage(Exception exception) {
+        if (exception instanceof BindException) {
+            return "port " + PORT + " is already in use";
+        }
+
+        String message = exception.getMessage();
+        return message == null || message.isBlank()
+                ? exception.getClass().getSimpleName()
+                : message;
     }
 
     private record DatabaseConfig(String url, String user, String password) {

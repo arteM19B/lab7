@@ -2,6 +2,7 @@ package main.Commands;
 
 import Network.CommandArgument;
 import Network.IntegerArgument;
+import main.db.ConnectionManager;
 import main.model.User;
 import main.service.CollectionService;
 
@@ -31,7 +32,7 @@ public class RemoveAtCommand implements Command {
                 return "Error: element with this index does not exist";
             }
         } catch (SQLException e) {
-            return "Database error: " + e.getMessage();
+            return ConnectionManager.getDatabaseErrorMessage(e);
         }
     }
 

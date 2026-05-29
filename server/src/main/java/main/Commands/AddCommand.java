@@ -3,6 +3,7 @@ package main.Commands;
 import Collection.Route;
 import Network.CommandArgument;
 import Network.RouteArgument;
+import main.db.ConnectionManager;
 import main.model.User;
 import main.service.CollectionService;
 
@@ -27,7 +28,7 @@ public class AddCommand implements Command {
             Route<Long> inserted = collectionService.add(route, user);
             return "Route added with ID " + inserted.getId();
         } catch (SQLException e) {
-            return "Database error: " + e.getMessage();
+            return ConnectionManager.getDatabaseErrorMessage(e);
         }
     }
 

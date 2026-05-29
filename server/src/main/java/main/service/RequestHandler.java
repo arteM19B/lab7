@@ -4,6 +4,7 @@ import Network.CommandType;
 import Network.Request;
 import Network.Response;
 import main.CollectionManager.Invoker;
+import main.db.ConnectionManager;
 import main.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class RequestHandler {
         } catch (IllegalArgumentException e) {
             return new Response("Error: " +  e.getMessage());
         } catch (SQLException e) {
-            return new Response("Database error: " +  e.getMessage());
+            return new Response(ConnectionManager.getDatabaseErrorMessage(e));
         } catch (Exception e) {
             return new Response("Server error: " +  e.getMessage());
         }
