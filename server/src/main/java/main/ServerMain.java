@@ -1,13 +1,13 @@
 package main;
 
-import main.CollectionManager.Invoker;
-import main.Commands.*;
-import Network.CommandType;
-import main.ServerNetwork.ReceivedPacket;
-import main.ServerNetwork.RequestReader;
-import main.ServerNetwork.RequestDispatcher;
-import main.ServerNetwork.ResponseSender;
-import main.ServerNetwork.UdpRequestReceiver;
+import main.collectionManager.Invoker;
+import main.commands.*;
+import network.CommandType;
+import main.serverNetwork.ReceivedPacket;
+import main.serverNetwork.RequestReader;
+import main.serverNetwork.RequestDispatcher;
+import main.serverNetwork.ResponseSender;
+import main.serverNetwork.UdpRequestReceiver;
 
 import java.io.IOException;
 import java.io.InputStream;

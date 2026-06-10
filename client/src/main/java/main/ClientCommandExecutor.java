@@ -1,14 +1,14 @@
 package main;
 
-import Collection.RouteXMLParser;
-import Exceptions.ScriptExecutionException;
-import Network.CommandArgument;
-import Network.CommandType;
-import Network.IntegerArgument;
-import Network.LongArgument;
-import Network.NoArgument;
-import Network.RouteArgument;
-import Network.UpdateArgument;
+import collection.RouteXMLParser;
+import exceptions.ScriptExecutionException;
+import network.CommandArgument;
+import network.CommandType;
+import network.IntegerArgument;
+import network.LongArgument;
+import network.NoArgument;
+import network.RouteArgument;
+import network.UpdateArgument;
 
 import java.net.SocketTimeoutException;
 import java.util.Locale;

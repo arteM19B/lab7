@@ -1,9 +1,9 @@
 package main;
 
-import Network.CommandArgument;
-import Network.CommandType;
-import Network.Request;
-import Network.Response;
+import network.CommandArgument;
+import network.CommandType;
+import network.Request;
+import network.Response;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

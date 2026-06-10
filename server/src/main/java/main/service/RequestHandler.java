@@ -1,9 +1,9 @@
 package main.service;
 
-import Network.CommandType;
-import Network.Request;
-import Network.Response;
-import main.CollectionManager.Invoker;
+import network.CommandType;
+import network.Request;
+import network.Response;
+import main.collectionManager.Invoker;
 import main.db.ConnectionManager;
 import main.model.User;
 import org.slf4j.Logger;

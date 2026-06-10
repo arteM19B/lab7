@@ -2,10 +2,10 @@ package main;
 
 import java.util.Scanner;
 
-import Collection.Coordinates;
-import Collection.Location;
-import Collection.Route;
-import Exceptions.ExitException;
+import collection.Coordinates;
+import collection.Location;
+import collection.Route;
+import exceptions.ExitException;
 /**
  * Класс-помощник для интерактивного и скриптового создания объектов {@link Route}.
  * Отвечает за чтение данных от пользователя с валидацией вводимых значений.

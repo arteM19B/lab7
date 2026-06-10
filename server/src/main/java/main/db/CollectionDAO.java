@@ -1,8 +1,8 @@
 package main.db;
 
-import Collection.Coordinates;
-import Collection.Location;
-import Collection.Route;
+import collection.Coordinates;
+import collection.Location;
+import collection.Route;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,7 +1,7 @@
 package main.service;
 
-import Collection.Location;
-import Collection.Route;
+import collection.Location;
+import collection.Route;
 import main.db.CollectionDAO;
 import main.model.User;
 

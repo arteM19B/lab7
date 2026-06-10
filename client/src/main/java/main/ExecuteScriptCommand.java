@@ -1,6 +1,6 @@
 package main;
 
-import Exceptions.RecursiveScriptException;
+import exceptions.RecursiveScriptException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
